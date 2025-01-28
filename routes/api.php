@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\UpdatedAnalyticsEvent;
 use App\Http\Controllers\AIController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OrderController;

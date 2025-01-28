@@ -33,18 +33,24 @@ class EloquentAnalyticsRepository implements AnalyticsRepositoryInterface
 
     public function getAnalytics(): array
     {
-        return DB::table('orders')->get()->pluck('value', 'type')->toArray();
+        return DB::table('orders')->join('products', 'orders.product_id', '=', 'products.id')
+            ->select('products.name', 'orders.quantity', 'orders.created_at')
+            ->groupBy('products.name')
+            ->orderBy('orders.quantity', 'desc')
+            ->get()->toArray();
     }
 
     public function getTotalRevenue(): float
     {
-        return DB::table('orders')->sum('total_amount');
+        return DB::table('orders')->join('products', 'orders.product_id', '=', 'products.id')
+        ->select(DB::raw('SUM(orders.quantity * products.price) as total_amount'))
+        ->value('total_amount');
     }
 
     public function getTopProductsBySales(int $limit): array
     {
-        return DB::table('orders')
-            ->select('product_id', DB::raw('SUM(quantity) as total_quantity'))
+        return DB::table('orders')->join('products', 'orders.product_id', '=', 'products.id')
+            ->select('products.name', DB::raw('SUM(quantity) as total_quantity'))
             ->groupBy('product_id')
             ->orderByDesc('total_quantity')
             ->limit($limit)
@@ -55,8 +61,9 @@ class EloquentAnalyticsRepository implements AnalyticsRepositoryInterface
     public function getRevenueInLastMinute(): float
     {
         return DB::table('orders')
-            ->where('created_at', '>=', now()->subMinute())
-            ->sum('total_amount');
+        ->join('products', 'orders.product_id', '=', 'products.id')
+        ->where('orders.created_at', '>=', now()->subMinute())
+        ->sum('products.price');
     }
 
     public function getOrderCountInLastMinute(): int

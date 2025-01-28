@@ -1,24 +1,42 @@
 <?php
+
 namespace App\Events\Listeners;
 
-use App\Events\OrderCreated;
-use App\Http\Services\AnalyticsService;
+// use App\Events\OrderCreated;
+// use App\Http\Services\AnalyticsService;
+
+use App\Events\UpdatedAnalyticsEvent;
+use App\Infrastructure\Eloquent\EloquentAnalyticsRepository;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class UpdateAnalyticsListener
 {
-    protected $analyticsService;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public function __construct(AnalyticsService $analyticsService)
+    protected $analyticsRepository;
+
+    public function __construct(EloquentAnalyticsRepository $analyticsRepository)
     {
-        $this->analyticsService = $analyticsService;
+        $this->analyticsRepository = $analyticsRepository;
     }
 
-    public function handle(OrderCreated $event)
+    /**
+     * Handle the event.
+     *
+     * @param  \App\Events\UpdatedAnalyticsEvent  $event
+     * @return void
+     */
+    public function handle(UpdatedAnalyticsEvent $event)
     {
-        // Update analytics after an order is created
-        $order = $event->orderId;
-        // Call the analytics service to update the analytics
-        $this->analyticsService->updateAnalyticsForOrder($order);
+        $analytics = $this->analyticsRepository->getAnalytics();
+        broadcast(new UpdatedAnalyticsEvent($analytics));
+    }
+
+    public function broadcastOn()
+    {
+        return new Channel('analytics');
     }
 }
-?>
