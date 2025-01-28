@@ -77,12 +77,7 @@ The **Sales Analytics** project is a real-time data visualization and reporting 
    php artisan migrate
    ```
 
-5. Start the WebSocket server:
-   ```bash
-   php artisan websockets:serve
-   ```
-
-6. Serve the application:
+5. Serve the application:
    ```bash
    php artisan serve
    ```
