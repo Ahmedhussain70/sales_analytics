@@ -6,13 +6,6 @@ use Illuminate\Support\Facades\Http;
 
 class OpenWeatherAPI
 {
-    // protected $apiKey;
-
-    // public function __construct()
-    // {
-    //     $this->apiKey = config('services.openweather.key');
-    // }
-
     public static function getWeather(string $city)
     {
         $response = Http::get("https://api.openweathermap.org/data/2.5/weather", [

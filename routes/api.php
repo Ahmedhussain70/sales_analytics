@@ -27,4 +27,4 @@ Route::get('weather/recommendations', [WeatherController::class, 'recommendation
 // Analytics routes
 Route::get('/analytics', [AnalyticsController::class, 'index']);
 
-Route::get('/recommendations', [AIController::class, 'getRecommendations']);
+Route::get('ai/recommendations', [AIController::class, 'getRecommendations']);
